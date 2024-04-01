@@ -1,0 +1,46 @@
+services:
+    web:
+        build:
+          context:    ./docker
+          dockerfile: Dockerfile
+        ports:
+            - "8888:80"
+        volumes:
+            - html:/var/www/html/
+            - ./php/php.ini:/etc/php5/php.ini
+        networks:
+            - code-network
+        depends_on:
+            - db
+    db:
+        image: mysql:8
+        restart: always
+        environment:
+          - MYSQL_DATABASE=db
+          # Password for root access
+          - MYSQL_ROOT_PASSWORD=rootpassword
+          - MYSQL_USER=user
+          - MYSQL_PASSWORD=user
+        ports:
+          # <Port exposed> : <MySQL Port running inside container>
+          - '3306:3306'
+        expose:
+          # Opens port 3306 on the container
+          - '3306'
+          # Where our data will be persisted
+        volumes:
+          - my_db:/var/lib/mysql
+networks:
+    code-network:
+        driver: bridge
+volumes:
+  my_db:
+    name: my_db
+    driver: local
+  html:
+    name: codeigniter-html
+    driver: local
+    driver_opts:
+        type: none
+        device: ./code/ci
+        o: bind
