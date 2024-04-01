@@ -13,7 +13,8 @@ services:
         depends_on:
             - db
     db:
-        image: mysql:8
+        image: mysql:5.7
+        platform: linux/x86_64
         restart: always
         environment:
           - MYSQL_DATABASE=db
@@ -30,6 +31,8 @@ services:
           # Where our data will be persisted
         volumes:
           - my_db:/var/lib/mysql
+        networks:
+            - code-network
 networks:
     code-network:
         driver: bridge
@@ -37,6 +40,10 @@ volumes:
   my_db:
     name: my_db
     driver: local
+    driver_opts:
+        type: none
+        device: ./my_db
+        o: bind
   html:
     name: codeigniter-html
     driver: local
